@@ -11,6 +11,7 @@ import com.itxiaogu.administrator.cnxw.R;
 
 
 /**
+ * 购物车
  * Created by Ivan on 15/9/22.
  */
 public class CartFragment extends Fragment {

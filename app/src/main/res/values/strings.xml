@@ -6,4 +6,6 @@
     <string name="catagory">分类</string>
     <string name="cart">购物车</string>
     <string name="mine">我的</string>
+    <string name="action_settings">标题</string>
+    <string name="action_help">帮助</string>
 </resources>

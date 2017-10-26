@@ -11,6 +11,7 @@ import com.itxiaogu.administrator.cnxw.R;
 
 
 /**
+ * 热卖
  * Created by Ivan on 15/9/22.
  */
 public class HotFragment extends Fragment {

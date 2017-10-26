@@ -1,8 +1,8 @@
 package com.itxiaogu.administrator.cnxw;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TabHost;
@@ -16,18 +16,21 @@ import com.itxiaogu.administrator.cnxw.fragment.HotFragment;
 import com.itxiaogu.administrator.cnxw.fragment.MineFragment;
 import com.itxiaogu.administrator.cnxw.utils.UIUtils;
 import com.itxiaogu.administrator.cnxw.widget.FragmentTabHost;
+import com.lidroid.xutils.ViewUtils;
+import com.lidroid.xutils.view.annotation.ViewInject;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-
+    @ViewInject(android.R.id.tabhost)
     private FragmentTabHost mTabhost;//底部导航栏
     private List<Tab> mTabs = new ArrayList<>(5);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ViewUtils.inject(this);
         initTab();//测试底部导航栏
     }
     private void initTab() {
@@ -43,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
         mTabs.add(tab_cart);
         mTabs.add(tab_mine);
 
-        mTabhost = (FragmentTabHost) this.findViewById(android.R.id.tabhost);
         mTabhost.setup(this,getSupportFragmentManager(),R.id.realtabcontent);
 
         for (Tab tab : mTabs){
@@ -51,8 +53,8 @@ public class MainActivity extends AppCompatActivity {
             tabSpec.setIndicator(buildIndicator(tab));
             mTabhost.addTab(tabSpec,tab.getFragment(),null);
         }
-        mTabhost.getTabWidget().setShowDividers(LinearLayout.SHOW_DIVIDER_NONE);
-        mTabhost.setCurrentTab(0);
+        mTabhost.getTabWidget().setShowDividers(LinearLayout.SHOW_DIVIDER_NONE);//去掉分隔线
+        mTabhost.setCurrentTab(0);//默认选择第一个
     }
     private View buildIndicator(Tab tab){
         View view = UIUtils.inflate(R.layout.tab_indicator);
