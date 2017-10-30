@@ -18,6 +18,7 @@ import com.itxiaogu.administrator.cnxw.R;
 import com.itxiaogu.administrator.cnxw.utils.UIUtils;
 
 /**
+ * 自定义标题栏（工具栏）
  * Created by Administrator on 2017/10/26.
  */
 
