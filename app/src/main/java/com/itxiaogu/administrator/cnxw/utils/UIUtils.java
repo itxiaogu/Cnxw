@@ -6,7 +6,9 @@ import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.itxiaogu.administrator.cnxw.myapplication.MyApplication;
 
@@ -89,7 +91,9 @@ public class UIUtils {
     public static View inflate(int layoutId) {
         return View.inflate(getContext(), layoutId, null);
     }
-
+    public static View inflate(int layoutId, ViewGroup viewGroup) {
+        return  LayoutInflater.from(viewGroup.getContext()).inflate(layoutId,viewGroup,false);
+    }
     /**
      * 判断当前是否运行在主线程
      * @return

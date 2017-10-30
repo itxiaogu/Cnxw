@@ -3,6 +3,8 @@ package com.itxiaogu.administrator.cnxw.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,10 +20,16 @@ import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.TextSliderView;
 import com.daimajia.slider.library.Tricks.ViewPagerEx;
 import com.itxiaogu.administrator.cnxw.R;
+import com.itxiaogu.administrator.cnxw.adapter.DividerItemDecortion;
+import com.itxiaogu.administrator.cnxw.adapter.HomeCatgoryAdapter;
+import com.itxiaogu.administrator.cnxw.bean.HomeCategory;
 import com.itxiaogu.administrator.cnxw.utils.LogUtils;
 import com.itxiaogu.administrator.cnxw.utils.UIUtils;
 import com.itxiaogu.administrator.cnxw.widget.FragmentTabHost;
 import com.lidroid.xutils.view.annotation.ViewInject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -32,19 +40,43 @@ public class HomeFragment extends Fragment {
     private Toolbar mToolBar;//标题栏
     private SliderLayout mSliderLayout;//广告轮播
     private PagerIndicator mPagerIndicator;//广告轮播指示栏
+    private RecyclerView mRecyclerView;
+    private HomeCatgoryAdapter mAdatper;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.fragment_home,container,false);
         initView(view);
 //        initToolbar(view);
-        initSlider();
+        initSlider();//广告轮播
+        initRecycler();
         return  view;
     }
+
+    private void initRecycler() {
+        List<HomeCategory> datas = new ArrayList<>(15);
+        HomeCategory category = new HomeCategory("热门活动",R.mipmap.ic_launcher_round,R.mipmap.ic_launcher_round,R.mipmap.ic_launcher_round);
+        datas.add(category);
+        category = new HomeCategory("有利可图",R.mipmap.ic_launcher_round,R.mipmap.ic_launcher_round,R.mipmap.ic_launcher_round);
+        datas.add(category);
+        category = new HomeCategory("品牌街",R.mipmap.ic_launcher_round,R.mipmap.ic_launcher_round,R.mipmap.ic_launcher_round);
+        datas.add(category);
+        category = new HomeCategory("金融街 包赚翻",R.mipmap.ic_launcher_round,R.mipmap.ic_launcher_round,R.mipmap.ic_launcher_round);
+        datas.add(category);
+        category = new HomeCategory("超值购",R.mipmap.ic_launcher_round,R.mipmap.ic_launcher_round,R.mipmap.ic_launcher_round);
+        datas.add(category);
+        mAdatper = new HomeCatgoryAdapter(datas);
+        mRecyclerView.setAdapter(mAdatper);
+        mRecyclerView.addItemDecoration(new DividerItemDecortion());//设置分割线
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));//设置布局
+    }
+
     private void initView(View view) {
         mToolBar=(Toolbar)view.findViewById(R.id.toolbar);
         mSliderLayout=(SliderLayout)view.findViewById(R.id.slider);
         mPagerIndicator=(PagerIndicator)view.findViewById(R.id.custom_indicator);
+        mRecyclerView=(RecyclerView)view.findViewById(R.id.recyclerview);
     }
     private void initSlider() {
         TextSliderView textSliderView = new TextSliderView(this.getActivity());
