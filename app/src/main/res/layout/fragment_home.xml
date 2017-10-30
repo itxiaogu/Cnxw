@@ -4,14 +4,15 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <android.support.v7.widget.Toolbar
+    <com.itxiaogu.administrator.cnxw.widget.CnToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
-        app:title="title"
-        app:navigationIcon="@drawable/icon_back_32px" />
+        app:navigationIcon="@drawable/icon_back_32px"
+        app:rightButtonIcon="@drawable/icon_back_32px"
+        app:isShowSearchView="true"/>
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
