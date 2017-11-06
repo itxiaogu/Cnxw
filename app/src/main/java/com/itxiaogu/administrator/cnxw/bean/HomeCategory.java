@@ -6,7 +6,7 @@ import java.io.Serializable;
  * Created by Administrator on 2017/10/30.
  */
 
-public class HomeCategory implements Serializable {
+public class HomeCategory extends BaseBean{
     private String name;
     private int imgBig;
     private int imgSmallTop;

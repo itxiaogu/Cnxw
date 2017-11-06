@@ -14,7 +14,6 @@ import java.util.concurrent.TimeUnit;
 public class ThreadManager {
 
 	private static ThreadPool mThreadPool;
-
 	// 获取单例的线程池对象
 	public static ThreadPool getThreadPool() {
 		if (mThreadPool == null) {
@@ -27,7 +26,6 @@ public class ThreadManager {
 				}
 			}
 		}
-
 		return mThreadPool;
 	}
 

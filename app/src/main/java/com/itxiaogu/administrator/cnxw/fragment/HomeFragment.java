@@ -1,12 +1,12 @@
 package com.itxiaogu.administrator.cnxw.fragment;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,17 +19,30 @@ import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.TextSliderView;
 import com.daimajia.slider.library.Tricks.ViewPagerEx;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.itxiaogu.administrator.cnxw.R;
 import com.itxiaogu.administrator.cnxw.adapter.DividerItemDecortion;
 import com.itxiaogu.administrator.cnxw.adapter.HomeCatgoryAdapter;
+import com.itxiaogu.administrator.cnxw.bean.Banner;
 import com.itxiaogu.administrator.cnxw.bean.HomeCategory;
+import com.itxiaogu.administrator.cnxw.http.BaseCallback;
+import com.itxiaogu.administrator.cnxw.http.OkHttpHelper;
+import com.itxiaogu.administrator.cnxw.http.SpotsCallBack;
+import com.itxiaogu.administrator.cnxw.utils.JsonUtils;
 import com.itxiaogu.administrator.cnxw.utils.LogUtils;
+import com.itxiaogu.administrator.cnxw.utils.ThreadManager;
 import com.itxiaogu.administrator.cnxw.utils.UIUtils;
-import com.itxiaogu.administrator.cnxw.widget.FragmentTabHost;
-import com.lidroid.xutils.view.annotation.ViewInject;
-
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -42,18 +55,51 @@ public class HomeFragment extends Fragment {
     private PagerIndicator mPagerIndicator;//广告轮播指示栏
     private RecyclerView mRecyclerView;
     private HomeCatgoryAdapter mAdatper;
-
+    private Activity mActivity;
+    private List<Banner> mBannerList;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.fragment_home,container,false);
+        mActivity=getActivity();
+        requestSliderResources();
         initView(view);
 //        initToolbar(view);
-        initSlider();//广告轮播
         initRecycler();
+//        ThreadManager.getThreadPool().execute(new Runnable() {
+//            @Override
+//            public void run() {
+//                requestSliderResources();
+//            }
+//        });
         return  view;
     }
 
+    /**
+     * get请求广告轮播数据
+     */
+    private void requestSliderResources(){
+        String url="http://112.124.22.238:8081/course_api/banner/query";
+        Map<String,String> parameter=new HashMap<>();
+        parameter.put("type","1");
+        OkHttpHelper.performNetworkRequest().httpPost(url, parameter, new SpotsCallBack<List<Banner>>(mActivity) {
+
+            @Override
+            public void onSuccess(Response response, List<Banner> banners) {
+                mBannerList=banners;
+                initSlider();
+            }
+
+            @Override
+            public void onError(Response response, int code, Exception e) {
+                Toast.makeText(mActivity,"",Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    /**
+     * 初始化商品列表
+     */
     private void initRecycler() {
         List<HomeCategory> datas = new ArrayList<>(15);
         HomeCategory category = new HomeCategory("热门活动",R.mipmap.ic_launcher_round,R.mipmap.ic_launcher_round,R.mipmap.ic_launcher_round);
@@ -79,60 +125,39 @@ public class HomeFragment extends Fragment {
         mRecyclerView=(RecyclerView)view.findViewById(R.id.recyclerview);
     }
     private void initSlider() {
-        TextSliderView textSliderView = new TextSliderView(this.getActivity());
-        textSliderView.image("http://m.360buyimg.com/mobilecms/s300x98_jfs/t2416/102/20949846/13425/a3027ebc/55e6d1b9Ne6fd6d8f.jpg");
-        textSliderView.description("新品推荐");//提示信息
-        textSliderView.setOnSliderClickListener(new BaseSliderView.OnSliderClickListener() {//单击事件监听
-            @Override
-            public void onSliderClick(BaseSliderView baseSliderView) {
-
-                Toast.makeText(HomeFragment.this.getActivity(),"新品推荐",Toast.LENGTH_LONG).show();
-
+        if (mBannerList!=null){
+            for (Banner data:mBannerList){
+                TextSliderView textSliderView = new TextSliderView(mActivity);
+                textSliderView.image(data.getImgUrl());
+                textSliderView.description(data.getName());//提示信息
+                textSliderView.setScaleType(BaseSliderView.ScaleType.Fit);
+                textSliderView.setOnSliderClickListener(new BaseSliderView.OnSliderClickListener() {//单击事件监听
+                    @Override
+                    public void onSliderClick(BaseSliderView baseSliderView) {
+                        Toast.makeText(HomeFragment.this.getActivity(),baseSliderView.getDescription(),Toast.LENGTH_LONG).show();
+                    }
+                });
+                mSliderLayout.addSlider(textSliderView);
             }
-        });
-        TextSliderView textSliderView2 = new TextSliderView(this.getActivity());
-        textSliderView2.image("http://m.360buyimg.com/mobilecms/s300x98_jfs/t1507/64/486775407/55927/d72d78cb/558d2fbaNb3c2f349.jpg");
-        textSliderView2.description("时尚男装");
-        textSliderView2.setOnSliderClickListener(new BaseSliderView.OnSliderClickListener() {
-            @Override
-            public void onSliderClick(BaseSliderView baseSliderView) {
-
-                Toast.makeText(HomeFragment.this.getActivity(),"时尚男装",Toast.LENGTH_LONG).show();
-
-            }
-        });
-        TextSliderView textSliderView3 = new TextSliderView(this.getActivity());
-        textSliderView3.image("http://m.360buyimg.com/mobilecms/s300x98_jfs/t1363/77/1381395719/60705/ce91ad5c/55dd271aN49efd216.jpg");
-        textSliderView3.description("家电秒杀");
-        textSliderView3.setOnSliderClickListener(new BaseSliderView.OnSliderClickListener() {
-            @Override
-            public void onSliderClick(BaseSliderView baseSliderView) {
-
-                Toast.makeText(HomeFragment.this.getActivity(),"家电秒杀",Toast.LENGTH_LONG).show();
-
-            }
-        });
-        mSliderLayout.addSlider(textSliderView);
-        mSliderLayout.addSlider(textSliderView2);
-        mSliderLayout.addSlider(textSliderView3);
-//        mSliderLayout.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);//设置默认的广告轮播指示栏
-        mSliderLayout.setCustomIndicator(mPagerIndicator);//设置指示器
+        }
+        mSliderLayout.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);//设置默认的广告轮播指示栏
+//        mSliderLayout.setCustomIndicator(mPagerIndicator);//设置指示器
         mSliderLayout.setCustomAnimation(new DescriptionAnimation());//设置动画
         mSliderLayout.setPresetTransformer(SliderLayout.Transformer.RotateUp);//设置转场效果
         mSliderLayout.setDuration(3000);//设置动画时间
         mSliderLayout.addOnPageChangeListener(new ViewPagerEx.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int i, float v, int i1) {
-                LogUtils.d("onPageScrolled");
+//                LogUtils.d("onPageScrolled");
             }
 
             @Override
             public void onPageSelected(int i) {
-                LogUtils.d("onPageSelected");
+//                LogUtils.d("onPageSelected");
             }
             @Override
             public void onPageScrollStateChanged(int i) {
-                LogUtils.d("onPageScrollStateChanged");
+//                LogUtils.d("onPageScrollStateChanged");
             }
         });
     }
