@@ -7,8 +7,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.itxiaogu.administrator.cnxw.R;
-import com.itxiaogu.administrator.cnxw.bean.HomeCategory;
+import com.itxiaogu.administrator.cnxw.bean.Campaign;
+import com.itxiaogu.administrator.cnxw.bean.HomeCampaign;
 import com.itxiaogu.administrator.cnxw.utils.UIUtils;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -20,9 +22,9 @@ import java.util.List;
 public class HomeCatgoryAdapter extends RecyclerView.Adapter<HomeCatgoryAdapter.ViewHolder> {
     private  static int VIEW_TYPE_L=0;
     private  static int VIEW_TYPE_R=1;
-    private List<HomeCategory> datalis;
-
-    public HomeCatgoryAdapter(List<HomeCategory> datalis) {
+    private List<HomeCampaign> datalis;
+    private  OnCampaignClickListener mListener;
+    public HomeCatgoryAdapter(List<HomeCampaign> datalis) {
         this.datalis = datalis;
     }
 
@@ -37,10 +39,10 @@ public class HomeCatgoryAdapter extends RecyclerView.Adapter<HomeCatgoryAdapter.
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
-        viewHolder.textTitle.setText(datalis.get(position).getName());
-        viewHolder.imageViewBig.setImageResource(datalis.get(position).getImgBig());
-        viewHolder.imageViewSmallTop.setImageResource(datalis.get(position).getImgSmallTop());
-        viewHolder.imageViewSmallBottom.setImageResource(datalis.get(position).getImgSmallBottom());
+        viewHolder.textTitle.setText(datalis.get(position).getTitle());
+        Picasso.with(UIUtils.getContext()).load(datalis.get(position).getCpOne().getImgUrl()).into(viewHolder.imageViewBig);
+        Picasso.with(UIUtils.getContext()).load(datalis.get(position).getCpTwo().getImgUrl()).into(viewHolder.imageViewSmallTop);
+        Picasso.with(UIUtils.getContext()).load(datalis.get(position).getCpThree().getImgUrl()).into(viewHolder.imageViewSmallBottom);
     }
 
     @Override
@@ -57,7 +59,7 @@ public class HomeCatgoryAdapter extends RecyclerView.Adapter<HomeCatgoryAdapter.
         }
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder{
+   public  class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         TextView textTitle;
         ImageView imageViewBig;
         ImageView imageViewSmallTop;
@@ -68,6 +70,37 @@ public class HomeCatgoryAdapter extends RecyclerView.Adapter<HomeCatgoryAdapter.
             imageViewBig = (ImageView) itemView.findViewById(R.id.imgview_big);
             imageViewSmallTop = (ImageView) itemView.findViewById(R.id.imgview_small_top);
             imageViewSmallBottom = (ImageView) itemView.findViewById(R.id.imgview_small_bottom);
+            imageViewBig.setOnClickListener(this);
+            imageViewSmallTop.setOnClickListener(this);
+            imageViewSmallBottom.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v) {
+            HomeCampaign homeCampaign = datalis.get(getLayoutPosition());
+            if(mListener !=null){
+
+                switch (v.getId()){
+
+                    case  R.id.imgview_big:
+                        mListener.onClick(v,homeCampaign.getCpOne());
+                        break;
+
+                    case  R.id.imgview_small_top:
+                        mListener.onClick(v,homeCampaign.getCpTwo());
+                        break;
+
+                    case  R.id.imgview_small_bottom:
+                        mListener.onClick(v,homeCampaign.getCpThree());
+                        break;
+                }
+            }
+        }
+    }
+    public void setOnCampaignClickListener(OnCampaignClickListener listener){
+        this.mListener = listener;
+    }
+    public  interface OnCampaignClickListener{
+        void onClick(View view,Campaign campaign);
     }
 }

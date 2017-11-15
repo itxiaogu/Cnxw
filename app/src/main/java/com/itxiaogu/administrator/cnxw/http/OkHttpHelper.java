@@ -87,19 +87,33 @@ public class OkHttpHelper {
                             @Override
                             public void run() {
                                 callback.onResponse(response);
-                                if(response.isSuccessful()) {//判断是否请求数据成功
-
-                                    try {
-                                        String resultStr = response.body().string();
-                                        callback.onSuccess(response,JsonUtils.getGsonUtils().jsonstrToData(resultStr,callback));
-                                    } catch (Exception e){ // Json解析的错误
-                                        callback.onError(response,response.code(),e);
-                                    }
-                                } else {
-                                    callback.onFail(response,response.code());
-                                }
                             }
                         });
+                        if(response.isSuccessful()) {//判断是否请求数据成功
+                            try {
+                                final String resultStr = response.body().string();
+                                UIUtils.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        callback.onSuccess(response,JsonUtils.getGsonUtils().jsonstrToData(resultStr,callback));
+                                    }
+                                });
+                            } catch (final Exception e){ // Json解析的错误
+                                UIUtils.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        callback.onError(response,response.code(),e);
+                                    }
+                                });
+                            }
+                        } else {
+                            UIUtils.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    callback.onFail(response,response.code());
+                                }
+                            });
+                        }
                     }
                 });
             }

@@ -317,4 +317,9 @@
     <color name="search_toolbar_bg">#ff484B50</color>
     <color name="toast_color">#ff2E76B9</color>
     <color name="login_button">#ff775025</color>
+
+    <color name="white_color_disable">#7fffffff</color>
+    <color name="red_btn_color_disable">#7fff5454</color>
+    <color name="red_btn_color_pressed">#ffd24242</color>
+    <color name="red_btn_color_normal">#ffff5454</color>
 </resources>

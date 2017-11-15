@@ -89,7 +89,10 @@ public class UIUtils {
      * 加载布局文件
      */
     public static View inflate(int layoutId) {
-        return View.inflate(getContext(), layoutId, null);
+        return inflate(getContext(), layoutId);
+    }
+    public static View inflate(Context context,int layoutId) {
+        return View.inflate(context, layoutId, null);
     }
     public static View inflate(int layoutId, ViewGroup viewGroup) {
         return  LayoutInflater.from(viewGroup.getContext()).inflate(layoutId,viewGroup,false);

@@ -19,27 +19,19 @@ import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.TextSliderView;
 import com.daimajia.slider.library.Tricks.ViewPagerEx;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.itxiaogu.administrator.cnxw.Contants;
 import com.itxiaogu.administrator.cnxw.R;
 import com.itxiaogu.administrator.cnxw.adapter.DividerItemDecortion;
 import com.itxiaogu.administrator.cnxw.adapter.HomeCatgoryAdapter;
 import com.itxiaogu.administrator.cnxw.bean.Banner;
-import com.itxiaogu.administrator.cnxw.bean.HomeCategory;
-import com.itxiaogu.administrator.cnxw.http.BaseCallback;
+import com.itxiaogu.administrator.cnxw.bean.Campaign;
+import com.itxiaogu.administrator.cnxw.bean.HomeCampaign;
 import com.itxiaogu.administrator.cnxw.http.OkHttpHelper;
 import com.itxiaogu.administrator.cnxw.http.SpotsCallBack;
-import com.itxiaogu.administrator.cnxw.utils.JsonUtils;
 import com.itxiaogu.administrator.cnxw.utils.LogUtils;
-import com.itxiaogu.administrator.cnxw.utils.ThreadManager;
 import com.itxiaogu.administrator.cnxw.utils.UIUtils;
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
-import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,27 +54,43 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.fragment_home,container,false);
         mActivity=getActivity();
-        requestSliderResources();
         initView(view);
 //        initToolbar(view);
-        initRecycler();
-//        ThreadManager.getThreadPool().execute(new Runnable() {
-//            @Override
-//            public void run() {
-//                requestSliderResources();
-//            }
-//        });
+        initDatas();
+        initEvent();
         return  view;
     }
+    private void initEvent(){
 
+    }
+    private void initDatas(){
+        requestSliderResources();
+        requstMerchandiseResources();
+    }
+
+    /**
+     * get请求商品列表
+     */
+    private void requstMerchandiseResources(){
+        OkHttpHelper.performNetworkRequest().httpGet(Contants.API.CAMPAIGN_HOME, new SpotsCallBack<List<HomeCampaign>>(mActivity) {
+
+            @Override
+            public void onSuccess(Response response, List<HomeCampaign> campaigns) {
+                initRecycler(campaigns);
+            }
+            @Override
+            public void onError(Response response, int code, Exception e) {
+                LogUtils.d("code:"+code);e.printStackTrace();
+            }
+        });
+    }
     /**
      * get请求广告轮播数据
      */
     private void requestSliderResources(){
-        String url="http://112.124.22.238:8081/course_api/banner/query";
         Map<String,String> parameter=new HashMap<>();
         parameter.put("type","1");
-        OkHttpHelper.performNetworkRequest().httpPost(url, parameter, new SpotsCallBack<List<Banner>>(mActivity) {
+        OkHttpHelper.performNetworkRequest().httpPost(Contants.API.Advertising_HOME, parameter, new SpotsCallBack<List<Banner>>(mActivity) {
 
             @Override
             public void onSuccess(Response response, List<Banner> banners) {
@@ -100,22 +108,17 @@ public class HomeFragment extends Fragment {
     /**
      * 初始化商品列表
      */
-    private void initRecycler() {
-        List<HomeCategory> datas = new ArrayList<>(15);
-        HomeCategory category = new HomeCategory("热门活动",R.mipmap.ic_launcher_round,R.mipmap.ic_launcher_round,R.mipmap.ic_launcher_round);
-        datas.add(category);
-        category = new HomeCategory("有利可图",R.mipmap.ic_launcher_round,R.mipmap.ic_launcher_round,R.mipmap.ic_launcher_round);
-        datas.add(category);
-        category = new HomeCategory("品牌街",R.mipmap.ic_launcher_round,R.mipmap.ic_launcher_round,R.mipmap.ic_launcher_round);
-        datas.add(category);
-        category = new HomeCategory("金融街 包赚翻",R.mipmap.ic_launcher_round,R.mipmap.ic_launcher_round,R.mipmap.ic_launcher_round);
-        datas.add(category);
-        category = new HomeCategory("超值购",R.mipmap.ic_launcher_round,R.mipmap.ic_launcher_round,R.mipmap.ic_launcher_round);
-        datas.add(category);
-        mAdatper = new HomeCatgoryAdapter(datas);
+    private void initRecycler(List<HomeCampaign> campaigns) {
+        mAdatper = new HomeCatgoryAdapter(campaigns);
         mRecyclerView.setAdapter(mAdatper);
-        mRecyclerView.addItemDecoration(new DividerItemDecortion());//设置分割线
+        mRecyclerView.addItemDecoration(new DividerItemDecortion(getContext(),DividerItemDecortion.VERTICAL_LIST));//设置分割线
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));//设置布局
+        mAdatper.setOnCampaignClickListener(new HomeCatgoryAdapter.OnCampaignClickListener() {
+            @Override
+            public void onClick(View view, Campaign campaign) {
+                Toast.makeText(getContext(),"title="+campaign.getTitle(),Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void initView(View view) {
