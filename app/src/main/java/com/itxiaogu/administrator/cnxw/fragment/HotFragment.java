@@ -107,11 +107,10 @@ public class HotFragment extends Fragment {
     }
 
     private void loadMoreData(){
-        if(mAdatper.getListDataSize()!=totalCount) {
+        if(mAdatper.getItemCount()!=totalCount) {
             currPage++;
             state=STATE_MORE;
             getwebserverData(currPage,pageSize);
-            mAdatper.getListDataSize();
         }else{
             Toast.makeText(getContext(),"到底啦",Toast.LENGTH_SHORT).show();
             mRefreshLaout.finishRefreshLoadMore();
